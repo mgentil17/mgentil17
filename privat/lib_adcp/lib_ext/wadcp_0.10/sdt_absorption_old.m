@@ -1,0 +1,91 @@
+
+%% WADCP PACKAGE 0.3 -- function [zeta_vdB,zeta_ddB,Cst_sdt]=sdt_absorption
+%%
+%
+% Backscatter signal processing toolbox
+%
+% _Written by C. Tessier, IFREMER |contact : caroline.tessier@ifremer.fr 
+
+function [zeta_vdB,zeta_ddB,Cst_sdt]=sdt_absorption
+
+global f 
+%%
+
+% * sediment and water properties to evaluate sigbar and sigbartot * 
+
+a_s=40;      % default particules diameter [µm]
+rho_s=2650;  % default individual particles density [kg/m^3]
+c_s=4500;    % default sound celerity in particles [m/s]
+rho0=1025;   % default water density [kg/m^3]
+c0=1505;     % default sound celerity in water [m/s]
+
+prompt = {'a_s : particules mean/equivalent diameter [µm]';'rho_s : particles density [kg/m^3]';'c_s : sound celerity in particles';'rho0 : water density [kg/m^3]';'c0 : sound celerity in water [m/s]'};
+dlg_title = 'Summary of particles and water characteristics - can be changed by users';
+num_lines = 1;
+def = {num2str(a_s);num2str(rho_s);num2str(c_s);num2str(rho0);num2str(c0) };
+tmp = inputdlg(prompt,dlg_title,num_lines,def);
+a_s=eval(char(tmp{1}));
+rho_s=eval(char(tmp{2}));
+c_s=eval(char(tmp(3)));
+rho0=eval(char(tmp{4}));
+c0=eval(char(tmp{5}));
+
+%-----------------------------------
+a_s=a_s/2*10^-6; %radius en meters needed !! 
+v_s=4/3*pi*(a_s)^3; %individual volume en m^3
+%-----------------------------------
+
+% ask user to choose nature of particles  (2 default case and one user defined) 
+qst_proc=questdlg('Which kind of particles ?','Particles Caracteristics','Mineral','Zooplankton','User defined','Mineral');
+switch qst_proc
+    case 'Mineral'
+        id_sed=1;
+    case 'Zooplankton'
+        id_sed=2;
+    case 'User defined'
+        id_sed=3;
+end
+
+% ask user to choose theorical model (1) Thorne or (2) Tessier (from Stanton)
+qst_proc=questdlg('Which Acoustic Scattering Model ?','Acoustic Scattering Model',...
+    'Tessier 2006 (all particles)','Thorne 2002 (sand)','Tessier 2006 (all particles');
+switch qst_proc
+    case 'Thorne 2002 (sand)'
+        id_mod=1;
+    case 'Tessier 2006 (all particles)'
+        id_mod=2;
+end
+
+if ((id_mod==1) & (id_sed~=1)) 
+    display('!!! WARNING !!! ')
+    display('Acoustic Scattering Model of Thorne valid for MINERAL particles only')
+end
+
+% evaluation of scattering cross-sections 
+[sigbar,sigbartot]=sigmabar(id_sed,id_mod,f,a_s,rho_s,c_s);
+
+% sediment caracterisation in the Scatter Index IV : IV=10log10(M*sigbar/rho_s/vs) 
+Cst_sdt=10*log10(sigbar/rho_s/v_s);
+
+%%
+% * sediment absorption constantes * 
+
+%-absorption visqueuse particules zeta_v [Urick,1948]
+lambda=1500/f/1000;  % mean wave length 
+omega=2*pi*f*1000;  %vitesse angulaire (rad/s)              
+nu=1.3*10^-6;%viscosite cinematique eau nu (m^2/s)
+beta=(omega/2/nu)^0.5;
+teta=0.5*(1+9./(2*beta.*a_s));
+s=(9./(4*beta.*a_s)).*(1+1./(beta.*a_s));
+gg=rho_s/rho0;
+c0=1500;
+zeta_v=(2*pi/lambda*(gg-1)^2)/(2*rho_s)*(s/(s^2+(gg+teta)^2));
+zeta_vdB=20*log10(exp(1))*zeta_v;
+
+%-absorption due a diffusion par particules zeta_d
+zeta_ddB=20/2*log10(exp(1))*(sigbartot/rho_s/v_s);
+
+%-amortissement total du au sediment alpha_s
+%qs=2*(zeta_vdB+zeta_ddB)*M*dR;
+
+

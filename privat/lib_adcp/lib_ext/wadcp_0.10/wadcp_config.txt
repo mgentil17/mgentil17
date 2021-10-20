@@ -1,0 +1,39 @@
+***************************************************************************
+***                       WADCP CONFIG                                  ***
+***								        ***
+*** Used by wadcp_xx matlab routine as namelist for ADCP postprocessing ***
+***    Last update : 2012-02-21        R. Verney, Ifremer               ***
+***						                        ***
+***************************************************************************
+
+1	'qst_proc, load mode : 1 :  load raw data, 2 : process data, 3: playback data'
+0	'qst_mode,  instrument mode : 0 :moored, 1 : Survey'
+/Users/romaric2/Desktop/PLUMRHO_leg1/DATA_PLUMRHO1/adcp/20150203/PLUMRHOLEG1_20150203_ADCP.000	 'file full path, linux or windows'
+0	't_lag, time lag with UT reference time'
+Matlab	'Output data format: Matlab or netcdf' 
+1200	'ADCP frequency : 1200, 600, 300, 150 for RDI, 500, 750...for Nortek/Sontek'
+off	'Surface/Bottom filter option (On/Off)'
+
+0.2	'Distance ADCP->Bed [IMM] (m)' 
+0.4	'Blanking distance [WB] (m)'
+0.0762	'Transducer diameter [a_t](m)'
+20	'Beam angle [theta] (°)'
+2.0	'Beam open angle [ouv] (°)'
+0.42	'dB/count relationship default value~ 0.43 [Kc]'
+45	'Internal noise [EC0] (counts) default value [40-65]'
+70	'Noise [B] (dB/1microPa) default value [70-96]'
+217	'Emitted signal [SL0] (dB/1microPa) Default RDI values : 216 for 300kHz; 217 for 1200kHz'
+1	'beam number for backscatter inversion, 1,2,3,4,5, 5 meaning average [beam_choice]'
+0	'Battery variability in acoustic signal [Varia_batt]'
+Yes	'Near field correction'
+7	'Backscatter Calibration procedure 1: turbidimeter time series, 7 None'
+C:\Users\rverney\Desktop\2011_PREVISHELF\shelflux_wetlabs_sn1852_matlab.txt	'Turbidity meter calibration TS'
+0.00	'SPM calibration threshold (g/l)' 
+-90	'minimum dB threshold (dB)' 
+1	'Turbidity meter height above the bed (m)'
+1	'Filtering processing method, 1: pressure sensor, 2: correlation, 3: Backscatter amplitude [fchoice]'
+1	'Nb of cells skipped below the water surface for filtering method [cellskip]'
+5	'Correlation threshold value for surface tracking [cor_threshold]'
+1	'Choice for postprocessing period : 1 global, 0 subpart, linked with next parameter'
+2014/02/17 00:00	'Start date for post processing'
+2014/03/10 00:00	'Stop date for post processing'
